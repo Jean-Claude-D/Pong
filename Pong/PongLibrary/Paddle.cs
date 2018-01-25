@@ -9,6 +9,14 @@ namespace PongLibrary
 {
     public class Paddle
     {
-        
+        private readonly int _speed;
+        private int screenWidth;
+
+        private Rectangle boundingBox;
+        public Rectangle BoundingBox
+        {
+            get;
+            private set;
+        }
     }
 }
