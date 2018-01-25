@@ -58,6 +58,13 @@ namespace PongTests
         [TestMethod]
         public void MoveRight_AlreadyOnBound()
         {
+            Paddle paddleOnBound = GetPaddleOnBound(true);
+            int initialX = paddleOnBound.BoundingBox.X;
+
+            paddleOnBound.MoveRight();
+            int afterMoveX = paddleOnBound.BoundingBox.X;
+
+            Assert.AreEqual(initialX, afterMoveX);
         }
 
         [TestMethod]
