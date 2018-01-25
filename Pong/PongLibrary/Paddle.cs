@@ -58,6 +58,7 @@ namespace PongLibrary
             }
             else if(speed < 0)
             {
+                //To modify, may equal anything but 0 (inversed controls)
                 throw new ArgumentException(string.Format("speed ({0}) must be greater than or equal to 0", speed));
             }
 
