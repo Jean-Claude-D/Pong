@@ -65,10 +65,47 @@ namespace PongLibrary
             Rectangle boundingBox = new Rectangle();
             boundingBox.X = (screenWidth - paddleWidth) / 2;
             boundingBox.Y = screenHeight - paddleHeight;
+            boundingBox.Width = paddleWidth;
+            boundingBox.Height = paddleHeight;
 
             this.boundingBox = boundingBox;
             this.screenWidth = screenWidth;
             this._speed = speed;
+        }
+
+        /// <summary>
+        /// Moves this Paddle object by decrementing its X position by its speed
+        /// </summary>
+        public void MoveLeft()
+        {
+            this.Move(false);
+        }
+
+        /// <summary>
+        /// Moves this Paddle object by incrementing its X position by its speed
+        /// </summary>
+        public void MoveRight()
+        {
+            this.Move(true);
+        }
+
+        /// <summary>
+        /// Moves this Paddle object along the X axis based on its speed
+        /// </summary>
+        /// <param name="isRight">if true, moves this Paddle object to the right
+        /// if false, moves this Paddle object to the left</param>
+        private void Move(Boolean isRight)
+        {
+            //The x Vector
+            int xMovement = ((isRight) ? (this._speed) : (-this._speed));
+            int xMin = 0;
+            int xMax = this.screenWidth - this.boundingBox.Width;
+            Rectangle afterMove = this.boundingBox;
+
+            //Move along the x Vector, but not out of screen
+            afterMove.X = MathHelper.Clamp(afterMove.X + xMovement, xMin, xMax);
+
+            this.boundingBox = afterMove;
         }
     }
 }
