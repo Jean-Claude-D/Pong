@@ -195,19 +195,43 @@ namespace PongTests
         [TestMethod]
         public void Paddle_screenWidthIsGreaterThanPaddleWidth()
         {
+            Paddle paddleValidWidthState = null;
 
+            try
+            {
+                paddleValidWidthState = GetPaddleScreenWidth(5, 10);
+            }
+            catch (ArgumentException e)
+            {
+                Assert.Fail();
+            }
+
+            Assert.IsNotNull(paddleValidWidthState);
         }
 
         [TestMethod]
         public void Paddle_screenHeightEqualsPaddleHeight()
         {
+            Action instantiatePaddle = delegate () { GetPaddleScreenHeight(3, 3); };
 
+            Assert.ThrowsException<ArgumentException>(instantiatePaddle);
         }
 
         [TestMethod]
         public void Paddle_screenHeightIsGreaterThanPaddleHeight()
         {
+            Paddle paddleValidHeightState = null;
 
+            try
+            {
+                paddleValidHeightState = GetPaddleScreenHeight(5, 10);
+            }
+            catch (ArgumentException e)
+            {
+                Assert.Fail();
+            }
+
+            Assert.IsNotNull(paddleValidHeightState);
         }
 
         [TestMethod]
@@ -235,6 +259,11 @@ namespace PongTests
         private Paddle GetPaddleScreenWidth(int paddleWidth, int screenWidth)
         {
             return new Paddle(paddleWidth, 2, screenWidth, 4, 3);
+        }
+
+        private Paddle GetPaddleScreenHeight(int paddleHeight, int screenHeight)
+        {
+            return new Paddle(4, paddleHeight, 8, screenHeight, 10);
         }
     }
 }
