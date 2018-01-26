@@ -28,7 +28,7 @@ namespace PongTests
 
             paddle.MoveLeft();
 
-            Assert.Equals(limit, paddle.BoundingBox.X);
+            Assert.AreEqual(limit, paddle.BoundingBox.X);
         }
 
         [TestMethod]
@@ -40,7 +40,7 @@ namespace PongTests
 
             paddle.MoveLeft();
 
-            Assert.Equals(limit, paddle.BoundingBox.X);
+            Assert.AreEqual(limit, paddle.BoundingBox.X);
         }
 
         [TestMethod]
@@ -52,7 +52,7 @@ namespace PongTests
 
             paddle.MoveLeft();
 
-            Assert.Equals(expectedX, paddle.BoundingBox);
+            Assert.AreEqual(expectedX, paddle.BoundingBox);
         }
 
         [TestMethod]
@@ -76,7 +76,7 @@ namespace PongTests
 
             paddle.MoveRight();
 
-            Assert.Equals(limit, paddle.BoundingBox.X);
+            Assert.AreEqual(limit, paddle.BoundingBox.X);
         }
 
         [TestMethod]
@@ -88,7 +88,7 @@ namespace PongTests
 
             paddle.MoveRight();
 
-            Assert.Equals(limit, paddle.BoundingBox.X);
+            Assert.AreEqual(limit, paddle.BoundingBox.X);
         }
 
         [TestMethod]
@@ -100,7 +100,7 @@ namespace PongTests
 
             paddle.MoveRight();
 
-            Assert.Equals(expectedX, paddle.BoundingBox);
+            Assert.AreEqual(expectedX, paddle.BoundingBox);
         }
 
         private Paddle GetPaddleOnBound(Boolean isRightBound)

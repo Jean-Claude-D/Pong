@@ -65,11 +65,11 @@ namespace PongLibrary
             //placing the boundingBox at the center of the screen
             Rectangle boundingBox = new Rectangle();
             boundingBox.X = (screenWidth - paddleWidth) / 2;
-            boundingBox.Y = screenHeight - paddleHeight;
+            boundingBox.Y = -(screenHeight - paddleHeight);
             boundingBox.Width = paddleWidth;
             boundingBox.Height = paddleHeight;
 
-            this.boundingBox = boundingBox;
+            this.BoundingBox = boundingBox;
             this.screenWidth = screenWidth;
             this._speed = speed;
         }
