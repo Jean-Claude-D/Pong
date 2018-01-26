@@ -70,40 +70,100 @@ namespace PongTests
         [TestMethod]
         public void MoveRight_GoingOutOfBound()
         {
+            int space = 2;
+            Paddle paddle = GetPaddleOneStepFromOutOfBound(space);
+            int limit = paddle.BoundingBox.X + space;
+
+            paddle.MoveRight();
+
+            Assert.Equals(limit, paddle.BoundingBox.X);
         }
 
         [TestMethod]
         public void MoveRight_GoingOnBound()
         {
+            int space = 2;
+            Paddle paddle = GetPaddleOneStepFromBound(space);
+            int limit = paddle.BoundingBox.X + space;
+
+            paddle.MoveRight();
+
+            Assert.Equals(limit, paddle.BoundingBox.X);
         }
 
         [TestMethod]
         public void MoveRight_GoingInBound()
         {
+            int space = 5;
+            Paddle paddle = GetPaddeOneStepFromInbound(space);
+            int expectedX = paddle.BoundingBox.X + space;
+
+            paddle.MoveRight();
+
+            Assert.Equals(expectedX, paddle.BoundingBox);
+        }
+
+        private Paddle GetPaddleOnBound(Boolean isRightBound)
+        {
+            Paddle paddleOnBound = new Paddle(18, 2, 20, 15, 1);
+
+            if (isRightBound)
+            {
+                paddleOnBound.MoveRight();
+            }
+            else
+            {
+                paddleOnBound.MoveLeft();
+            }
+
+            return paddleOnBound;
+        }
+
+        private Paddle GetPaddleOneStepFromOutOfBound(int pixels)
+        {
+            return new Paddle(20, 2, 20 + (pixels * 2), 15, (pixels + 5));
+        }
+
+        private Paddle GetPaddleOneStepFromBound(int pixels)
+        {
+            return new Paddle(20, 2, 20 + (pixels * 2), 15, pixels);
+        }
+
+        private Paddle GetPaddeOneStepFromInbound(int speed)
+        {
+            return new Paddle(20, 2, 20 + (speed * 4), 15, speed);
         }
 
         [TestMethod]
         public void Paddle_paddleWidthEquals0()
         {
+            Action instantiatePaddle = delegate () { GetPaddleWithWidth(0); };
 
+            Assert.ThrowsException<ArgumentException>(instantiatePaddle);
         }
 
         [TestMethod]
         public void Paddle_paddleWidthIsGreaterThan0()
         {
-            
+            Action instantiatePaddle = delegate () { GetPaddleWithWidth(1); };
+
+            Assert.ThrowsException<ArgumentException>(instantiatePaddle);
         }
 
         [TestMethod]
         public void Paddle_paddleHeightEquals0()
         {
+            Action instantiatePaddle = delegate () { GetPaddleWithHeight(0); };
 
+            Assert.ThrowsException<ArgumentException>(instantiatePaddle);
         }
 
         [TestMethod]
         public void Paddle_paddleHeightIsGreaterThan0()
         {
+            Action instantiatePaddle = delegate () { GetPaddleWithHeight(0); };
 
+            Assert.ThrowsException<ArgumentException>(instantiatePaddle);
         }
 
         [TestMethod]
@@ -142,35 +202,14 @@ namespace PongTests
 
         }
 
-        private Paddle GetPaddleOnBound(Boolean isRightBound)
+        private Paddle GetPaddleWithWidth(int paddleWidth)
         {
-            Paddle paddleOnBound = new Paddle(18, 2, 20, 15, 1);
-
-            if (isRightBound)
-            {
-                paddleOnBound.MoveRight();
-            }
-            else
-            {
-                paddleOnBound.MoveLeft();
-            }
-
-            return paddleOnBound;
+            return new Paddle(paddleWidth, 2, paddleWidth * 2, 4, 2);
         }
 
-        private Paddle GetPaddleOneStepFromOutOfBound(int pixels)
+        private Paddle GetPaddleWithHeight(int paddleHeight)
         {
-            return new Paddle(20, 2, 20 + (pixels * 2), 15, (pixels + 5));
-        }
-
-        private Paddle GetPaddleOneStepFromBound(int pixels)
-        {
-            return new Paddle(20, 2, 20 + (pixels * 2), 15, pixels);
-        }
-
-        private Paddle GetPaddeOneStepFromInbound(int speed)
-        {
-            return new Paddle(20, 2, 20 + (speed * 4), 15, speed);
+            return new Paddle(15, paddleHeight, 30, paddleHeight * 2, 2);
         }
     }
 }
