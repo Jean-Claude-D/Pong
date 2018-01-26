@@ -237,13 +237,26 @@ namespace PongTests
         [TestMethod]
         public void Paddle_speedEquals0()
         {
+            Action instantiatePaddle = delegate () { GetPaddleWithSpeed(0); };
 
+            Assert.ThrowsException<ArgumentException>(instantiatePaddle);
         }
 
         [TestMethod]
         public void Paddle_speedEqualsNot0()
         {
+            Paddle paddleValidSpeed = null;
 
+            try
+            {
+                paddleValidSpeed = GetPaddleWithSpeed(-9);
+            }
+            catch (ArgumentException e)
+            {
+                Assert.Fail();
+            }
+
+            Assert.IsNotNull(paddleValidSpeed);
         }
 
         private Paddle GetPaddleWithWidth(int paddleWidth)
@@ -264,6 +277,11 @@ namespace PongTests
         private Paddle GetPaddleScreenHeight(int paddleHeight, int screenHeight)
         {
             return new Paddle(4, paddleHeight, 8, screenHeight, 10);
+        }
+
+        private Paddle GetPaddleWithSpeed(int speed)
+        {
+            return new Paddle(5, 4, 10, 8, speed);
         }
     }
 }
