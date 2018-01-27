@@ -15,8 +15,8 @@ namespace PongLibrary
         private Rectangle boundingBox;
         public Rectangle BoundingBox
         {
-            get;
-            private set;
+            get => boundingBox;
+            private set => boundingBox = value;
         }
 
         /// <summary>
@@ -56,10 +56,9 @@ namespace PongLibrary
                     (string.Format("screenHeight ({0}) must be greater than paddleHeight ({1})",
                     screenHeight, paddleHeight));
             }
-            else if(speed < 0)
+            else if(speed == 0)
             {
-                //To modify, may equal anything but 0 (inversed controls)
-                throw new ArgumentException(string.Format("speed ({0}) must be greater than or equal to 0", speed));
+                throw new ArgumentException(string.Format("speed ({0}) may not equal", speed));
             }
 
             //placing the boundingBox at the center of the screen

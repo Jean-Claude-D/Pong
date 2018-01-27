@@ -52,7 +52,7 @@ namespace PongTests
 
             paddle.MoveLeft();
 
-            Assert.AreEqual(expectedX, paddle.BoundingBox);
+            Assert.AreEqual(expectedX, paddle.BoundingBox.X);
         }
 
         [TestMethod]
@@ -100,7 +100,7 @@ namespace PongTests
 
             paddle.MoveRight();
 
-            Assert.AreEqual(expectedX, paddle.BoundingBox);
+            Assert.AreEqual(expectedX, paddle.BoundingBox.X);
         }
 
         private Paddle GetPaddleOnBound(Boolean isRightBound)
@@ -151,7 +151,7 @@ namespace PongTests
             {
                 paddleValidWidth = GetPaddleWithWidth(2);
             }
-            catch (ArgumentException e)
+            catch (ArgumentException)
             {
                 Assert.Fail();
             }
@@ -176,7 +176,7 @@ namespace PongTests
             {
                 paddleValidHeight = GetPaddleWithHeight(2);
             }
-            catch(ArgumentException e)
+            catch(ArgumentException)
             {
                 Assert.Fail();
             }
@@ -201,7 +201,7 @@ namespace PongTests
             {
                 paddleValidWidthState = GetPaddleScreenWidth(5, 10);
             }
-            catch (ArgumentException e)
+            catch (ArgumentException)
             {
                 Assert.Fail();
             }
@@ -226,7 +226,7 @@ namespace PongTests
             {
                 paddleValidHeightState = GetPaddleScreenHeight(5, 10);
             }
-            catch (ArgumentException e)
+            catch (ArgumentException)
             {
                 Assert.Fail();
             }
@@ -251,7 +251,7 @@ namespace PongTests
             {
                 paddleValidSpeed = GetPaddleWithSpeed(-9);
             }
-            catch (ArgumentException e)
+            catch (ArgumentException)
             {
                 Assert.Fail();
             }
