@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 
 namespace PongLibrary
 {
-    class Ball
+    public class Ball
     {
         public const float speed = 5; 
 
@@ -56,7 +56,8 @@ namespace PongLibrary
             }
             else if(paddle.BoundingBox.Width >= screenWidth)
             {
-                throw new ArgumentException(string.Format("The Width of ", paddle.BoundingBox.Width, screenWidth));
+                throw new ArgumentException
+                    (string.Format("The Width of ", paddle.BoundingBox.Width, screenWidth));
             }
 
             this._paddle = paddle;
