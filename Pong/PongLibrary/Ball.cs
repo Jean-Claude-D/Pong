@@ -54,6 +54,10 @@ namespace PongLibrary
                     "({0}) must be smaller than the screenHeight",
                     paddle.BoundingBox.Height + ballDiameter));
             }
+            else if(paddle.BoundingBox.Width >= screenWidth)
+            {
+                throw new ArgumentException(string.Format("The Width of ", paddle.BoundingBox.Width, screenWidth));
+            }
 
             this._paddle = paddle;
 
