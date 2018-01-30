@@ -9,7 +9,7 @@ namespace PongLibrary
 {
     public class Ball
     {
-        public const float speed = 5; 
+        public const float speed = 2; 
 
         private Vector2 _velocity;
         private Rectangle _screen;
@@ -73,22 +73,22 @@ namespace PongLibrary
             boundingBox.Size = new Point(ballDiameter);
             this.BoundingBox = boundingBox;
 
-            this._velocity = GetRandomVector();
+            this._velocity = getRandomVector();
         }
 
         //Returns a Vector2 that respects the speed const
-        private Vector2 GetRandomVector()
+        private Vector2 getRandomVector()
         {
             Random rand = new Random();
             float x = (float) rand.NextDouble() * speed;
             //pythagorean theorem to get second component
             float y = (float) Math.Sqrt(Math.Pow(speed, 2) - Math.Pow(x, 2));
 
-            return new Vector2(NegativeOrNot(x), NegativeOrNot(y));
+            return new Vector2(negativeOrNot(x), negativeOrNot(y));
         }
 
         //Returns the given float as its negative or positive, randomly
-        private float NegativeOrNot(float num)
+        private float negativeOrNot(float num)
         {
             Random rand = new Random();
             int randomInt = (int)(rand.NextDouble() * 2);
@@ -101,6 +101,51 @@ namespace PongLibrary
             {
                 return num;
             }
+        }
+
+        /// <summary>
+        /// Moves this Ball object according to its _velocity
+        /// </summary>
+        public void Move()
+        {
+            Point currentPosition = this.BoundingBox.Location;
+            Point resultPosition = new Point
+                (currentPosition.X + (int)this._velocity.X,
+                currentPosition.Y + (int)this._velocity.Y);
+            Vector2 remainingVector = this._velocity;
+            Boolean resultOffScreen = isPointOffScreen(resultPosition);
+            Boolean collidesWithPaddle = this.collidesWithPaddle();
+
+            while (resultOffScreen || collidesWithPaddle)
+            {
+                //if not collide with paddle, then bounce
+                //else collide with paddle
+            }
+
+            currentPosition.X += (int) remainingVector.X;
+            currentPosition.Y += (int) remainingVector.Y;
+
+        }
+
+        private Boolean isPointOffScreen(Point point)
+        {
+            if(point.X > this._screen.Right ||
+                point.X < this._screen.Left ||
+                point.Y > this._screen.Top ||
+                point.Y < this._screen.Bottom)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private Boolean collidesWithPaddle()
+        {
+            //use Rectangle.intersects(Rectangle)
+            return true;
         }
     }
 }
