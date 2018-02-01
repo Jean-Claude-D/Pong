@@ -113,39 +113,26 @@ namespace PongLibrary
                 (currentPosition.X + (int)this._velocity.X,
                 currentPosition.Y + (int)this._velocity.Y);
             Vector2 remainingVector = this._velocity;
-            Boolean resultOffScreen = isPointOffScreen(resultPosition);
-            Boolean collidesWithPaddle = this.collidesWithPaddle();
 
-            while (resultOffScreen || collidesWithPaddle)
+            for (Boolean offScreen = this.BoundingBox.Contains(resultPosition),
+                collidesWithPaddle = this._paddle.BoundingBox.Contains(resultPosition);
+                resultOffScreen || collidesWithPaddle;
+                resultOffScreen = isPointOffScreen(resultPosition),
+                collidesWithPaddle = this.collidesWithPaddle())
             {
-                //if not collide with paddle, then bounce
-                //else collide with paddle
+                if (collidesWithPaddle)
+                {
+
+                }
+                else
+                {
+
+                }
             }
 
             currentPosition.X += (int) remainingVector.X;
             currentPosition.Y += (int) remainingVector.Y;
 
-        }
-
-        private Boolean isPointOffScreen(Point point)
-        {
-            if(point.X > this._screen.Right ||
-                point.X < this._screen.Left ||
-                point.Y > this._screen.Top ||
-                point.Y < this._screen.Bottom)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        private Boolean collidesWithPaddle()
-        {
-            //use Rectangle.intersects(Rectangle)
-            return true;
         }
     }
 }
