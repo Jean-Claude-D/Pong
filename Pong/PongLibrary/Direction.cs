@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PongLibrary
 {
-    enum OffScreenDirection
+    enum Direction
     {
         UP, RIGHT, DOWN, LEFT, NONE
     }

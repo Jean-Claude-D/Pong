@@ -45,7 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ball.cs" />
-    <Compile Include="OffScreenDirection.cs" />
+    <Compile Include="Direction.cs" />
     <Compile Include="Paddle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
