@@ -9,7 +9,7 @@ namespace PongLibrary
 {
     public class Ball
     {
-        public const float speed = 2; 
+        public const float speed = 3; 
 
         private Vector2 _velocity;
         private Rectangle _screen;
@@ -69,7 +69,7 @@ namespace PongLibrary
 
             //Setting the Ball's collision Rectangle
             Rectangle boundingBox = new Rectangle();
-            boundingBox.Location = new Point((screenWidth - ballDiameter) / 2, 0);
+            boundingBox.Location = new Point((screenWidth - ballDiameter) / 2, _screen.Top);
             boundingBox.Size = new Point(ballDiameter);
             this.BoundingBox = boundingBox;
 
@@ -80,9 +80,9 @@ namespace PongLibrary
         private Vector2 getRandomVector()
         {
             Random rand = new Random();
-            float x = (float) rand.NextDouble() * speed;
+            float x = (float) rand.NextDouble();
             //pythagorean theorem to get second component
-            float y = (float) Math.Sqrt(Math.Pow(speed, 2) - Math.Pow(x, 2));
+            float y = (float) Math.Sqrt(1 - Math.Pow(x, 2));
 
             return new Vector2(negativeOrNot(x), negativeOrNot(y));
         }
@@ -108,31 +108,60 @@ namespace PongLibrary
         /// </summary>
         public void Move()
         {
-            Point currentPosition = this.BoundingBox.Location;
-            Point resultPosition = new Point
-                (currentPosition.X + (int)this._velocity.X,
-                currentPosition.Y + (int)this._velocity.Y);
-            Vector2 remainingVector = this._velocity;
-
-            for (Boolean offScreen = this.BoundingBox.Contains(resultPosition),
-                collidesWithPaddle = this._paddle.BoundingBox.Contains(resultPosition);
-                resultOffScreen || collidesWithPaddle;
-                resultOffScreen = isPointOffScreen(resultPosition),
-                collidesWithPaddle = this.collidesWithPaddle())
+            Rectangle newBall = this.BoundingBox;
+            for (int i = 0; i < speed; i++)
             {
-                if (collidesWithPaddle)
-                {
+                OffScreenDirection direction = checkOffScreen();
 
-                }
-                else
+                if (checkCollidePaddle())
                 {
-
+                    BounceOffPaddle();
                 }
+                else if (direction != OffScreenDirection.NONE)
+                {
+                    bounceOffScreen(direction);
+                }
+
+                newBall.Location = new Point((int)(this.BoundingBox.X + this._velocity.X),
+                    (int)(this.BoundingBox.Y + this._velocity.Y));
+                this.BoundingBox = newBall;
             }
 
-            currentPosition.X += (int) remainingVector.X;
-            currentPosition.Y += (int) remainingVector.Y;
+        }
 
+        private Boolean checkCollidePaddle()
+        {
+            return true;
+        }
+
+        public void BounceOffPaddle()
+        {
+
+        }
+
+        private OffScreenDirection checkOffScreen()
+        {
+            return OffScreenDirection.NONE;
+        }
+
+        private void bounceOffScreen(OffScreenDirection side)
+        {
+
+        }
+
+        private void bounce(Boolean isVertical)
+        {
+            Vector2 newVector = this._velocity;
+            if(isVertical)
+            {
+                newVector.X *= -1;
+            }
+            else
+            {
+                newVector.Y *= -1;
+            }
+
+            this._velocity = newVector;
         }
     }
 }
