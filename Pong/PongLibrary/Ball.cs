@@ -9,11 +9,9 @@ namespace PongLibrary
 {
     public class Ball
     {
-        /// <summary>
-        /// The number of times the _velocity gets applied
-        /// to this Ball object everytime it moves
-        /// </summary>
-        public const float speed = 3; 
+        //The number of times the _velocity gets applied
+        //to this Ball object everytime it moves
+        private float speed; 
 
         private Vector2 _velocity;
         private Rectangle _screen;
@@ -24,6 +22,25 @@ namespace PongLibrary
             private set => _boundingBox = value;
         }
         private Paddle _paddle;
+
+        /// <summary>
+        /// Constructs a new fully customizable Ball object,
+        /// to be used only for testing purposes
+        /// </summary>
+        /// <param name="ballDiameter">this Ball object's diameter</param>
+        /// <param name="screen">the surrounding screen</param>
+        /// <param name="paddle">the associated Paddle object</param>
+        /// <param name="velocity">this Ball's vector of movement</param>
+        /// <returns></returns>
+        public static Ball GetBallForTestingPurposes(Rectangle boundingBox, Rectangle screen, Paddle paddle, Vector2 velocity, int speed)
+        {
+            Ball testingBall = new Ball(boundingBox.Width, screen.Width, screen.Height, paddle);
+            testingBall._velocity = velocity;
+            testingBall.BoundingBox = boundingBox;
+            testingBall.speed = speed;
+
+            return testingBall;
+        }
 
         /// <summary>
         /// Constructs a new Ball object with its diameter,
@@ -51,12 +68,12 @@ namespace PongLibrary
             {
                 throw new ArgumentException("paddle cannot be null");
             }
-            else if(paddle.BoundingBox.Height + ballDiameter >= screenHeight)
+            else if(paddle.BoundingBox.Height + ballDiameter <= screenHeight)
             {
                 throw new ArgumentException
                     (string.Format("The sum of ballDiameter and the Height of paddle's BoundingBox " +
-                    "({0}) must be smaller than the screenHeight",
-                    paddle.BoundingBox.Height + ballDiameter));
+                    "({0}) must be smaller than the screenHeight ({1})",
+                    paddle.BoundingBox.Height + ballDiameter, screenHeight));
             }
             else if(paddle.BoundingBox.Width >= screenWidth)
             {
@@ -78,6 +95,7 @@ namespace PongLibrary
             this.BoundingBox = boundingBox;
 
             this._velocity = getRandomVector();
+            this.speed = 3;
         }
 
         //Returns a Vector2 that respects the speed const
@@ -117,6 +135,7 @@ namespace PongLibrary
             Rectangle newBall = this.BoundingBox;
             for (int i = 0; i < speed; i++)
             {
+                Console.WriteLine("Ball is at ({0}, {1})", this.BoundingBox.X, this.BoundingBox.Y);
                 Direction direction = checkOffScreen();
 
                 if (checkCollidePaddle())
@@ -140,7 +159,8 @@ namespace PongLibrary
         //with its associated Paddle object
         private Boolean checkCollidePaddle()
         {
-            return this.BoundingBox.Intersects(this._paddle.BoundingBox);
+            return this.BoundingBox.Intersects(this._paddle.BoundingBox) ||
+                this.BoundingBox.Bottom == this._paddle.BoundingBox.Top;
         }
 
         /// <summary>
@@ -151,7 +171,7 @@ namespace PongLibrary
         {
             Rectangle newBall = this.BoundingBox;
             newBall.Location = new Point(this.BoundingBox.X,
-                this._paddle.BoundingBox.Top + this.BoundingBox.Height);
+                this._paddle.BoundingBox.Top + this.BoundingBox.Height * 2);
             this.BoundingBox = newBall;
 
             bounce(Direction.DOWN);
@@ -216,12 +236,12 @@ namespace PongLibrary
             if(side == Direction.UP ||
                 side == Direction.DOWN)
             {
-                this._velocity.X *= -1;
+                this._velocity.Y *= -1;
             }
             else if(side == Direction.LEFT ||
                 side == Direction.RIGHT)
             {
-                this._velocity.Y *= -1;
+                this._velocity.X *= -1;
             }
         }
     }

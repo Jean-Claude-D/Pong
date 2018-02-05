@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PongLibrary;
 
@@ -65,6 +66,83 @@ namespace PongTests
         private Paddle GetPaddleWithScreenWidthAndHeight(int screenWidth, int screenHeight, int ratio)
         {
             return new Paddle(screenWidth / ratio, screenHeight / ratio, screenWidth, screenHeight, ratio);
+        }
+
+        [TestMethod]
+        public void Move_HitsPaddle()
+        {
+            Rectangle boundingBox = GetStdBall();
+            Rectangle screen = GetStdScreen();
+            Paddle paddle = GetStdPaddle();
+            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, new Vector2(-1), 3);
+            Point expectedPosition = new Point(7, -2);
+
+            ball.Move();
+
+            Assert.AreEqual(expectedPosition, ball.BoundingBox.Location);
+        }
+
+        [TestMethod]
+        public void Move_InsideGoUp()
+        {
+
+        }
+
+        [TestMethod]
+        public void Move_InsideGoRight()
+        {
+
+        }
+
+        [TestMethod]
+        public void Move_InsideGoDown()
+        {
+
+        }
+
+        [TestMethod]
+        public void Move_InsideGoLeft()
+        {
+
+        }
+
+        [TestMethod]
+        public void Move_OutsideGoUp()
+        {
+
+        }
+
+        [TestMethod]
+        public void Move_OutsideGoRight()
+        {
+
+        }
+
+        [TestMethod]
+        public void Move_OutsideGoDown()
+        {
+
+        }
+
+        [TestMethod]
+        public void Move_OutsideGoLeft()
+        {
+
+        }
+
+        private Paddle GetStdPaddle()
+        {
+            return new Paddle(10, 1, 12, 6, 1);
+        }
+
+        private Rectangle GetStdScreen()
+        {
+            return new Rectangle(location: Point.Zero, size: new Point(12, -6));
+        }
+
+        private Rectangle GetStdBall()
+        {
+            return new Rectangle(x: 10, y: -3, width: 1, height: 1);
         }
     }
 }
