@@ -85,25 +85,57 @@ namespace PongTests
         [TestMethod]
         public void Move_InsideGoUp()
         {
+            Rectangle boundingBox = GetStdBall();
+            Rectangle screen = GetStdScreen();
+            Paddle paddle = GetStdPaddle();
+            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, new Vector2(0, 1), 1);
+            Point expectedPosition = new Point(10, -2);
 
+            ball.Move();
+
+            Assert.AreEqual(expectedPosition, ball.BoundingBox.Location);
         }
 
         [TestMethod]
         public void Move_InsideGoRight()
         {
+            Rectangle boundingBox = GetStdBall();
+            Rectangle screen = GetStdScreen();
+            Paddle paddle = GetStdPaddle();
+            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, new Vector2(1, 0), 1);
+            Point expectedPosition = new Point(11, -3);
 
+            ball.Move();
+
+            Assert.AreEqual(expectedPosition, ball.BoundingBox.Location);
         }
 
         [TestMethod]
         public void Move_InsideGoDown()
         {
+            Rectangle boundingBox = GetStdBall();
+            Rectangle screen = GetStdScreen();
+            Paddle paddle = GetStdPaddle();
+            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, new Vector2(0, -1), 1);
+            Point expectedPosition = new Point(10, -4);
 
+            ball.Move();
+
+            Assert.AreEqual(expectedPosition, ball.BoundingBox.Location);
         }
 
         [TestMethod]
         public void Move_InsideGoLeft()
         {
+            Rectangle boundingBox = GetStdBall();
+            Rectangle screen = GetStdScreen();
+            Paddle paddle = GetStdPaddle();
+            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, new Vector2(-1, 0), 1);
+            Point expectedPosition = new Point(9, -3);
 
+            ball.Move();
+
+            Assert.AreEqual(expectedPosition, ball.BoundingBox.Location);
         }
 
         [TestMethod]
