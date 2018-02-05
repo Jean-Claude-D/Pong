@@ -175,7 +175,7 @@ namespace PongTests
             Paddle paddle = GetStdPaddle();
             paddle.MoveLeft();
             Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, new Vector2(0, -1), 6);
-            Point expectedPosition = boundingBox.Location;
+            Point expectedPosition = new Point(11, -5);
 
             ball.Move();
 

@@ -140,6 +140,7 @@ namespace PongLibrary
 
                 if (checkCollidePaddle())
                 {
+                    Console.WriteLine("Bouoncing on paddle " + this._paddle.BoundingBox.ToString());
                     BounceOffPaddle();
                 }
                 else if (direction != Direction.NONE)
@@ -160,7 +161,9 @@ namespace PongLibrary
         private Boolean checkCollidePaddle()
         {
             return this.BoundingBox.Intersects(this._paddle.BoundingBox) ||
-                this.BoundingBox.Bottom == this._paddle.BoundingBox.Top;
+                (this.BoundingBox.Bottom == this._paddle.BoundingBox.Top &&
+                this.BoundingBox.Left <= this._paddle.BoundingBox.Right &&
+                this.BoundingBox.Right >= this._paddle.BoundingBox.Left);
         }
 
         /// <summary>
@@ -181,24 +184,29 @@ namespace PongLibrary
         //is heading off screen
         private Direction checkOffScreen()
         {
-            if(this.BoundingBox.Top > this._screen.Top)
+            if(this.BoundingBox.Top + this._velocity.Y > this._screen.Top)
             {
+                Console.WriteLine("Up");
                 return Direction.UP;
             }
-            else if(this.BoundingBox.Right > this._screen.Right)
+            else if(this.BoundingBox.Right + this._velocity.X > this._screen.Right)
             {
+                Console.WriteLine("Right");
                 return Direction.RIGHT;
             }
-            else if(this.BoundingBox.Left < this._screen.Left)
+            else if(this.BoundingBox.Left + this._velocity.X < this._screen.Left)
             {
+                Console.WriteLine("Left");
                 return Direction.LEFT;
             }
-            else if(this.BoundingBox.Bottom < this._screen.Bottom)
+            else if(this.BoundingBox.Bottom + this._velocity.Y < this._screen.Bottom)
             {
+                Console.WriteLine("Down");
                 return Direction.DOWN;
             }
             else
             {
+                Console.WriteLine("No");
                 return Direction.NONE;
             }
         }
@@ -224,8 +232,7 @@ namespace PongLibrary
             this._velocity = Vector2.Zero;
             //Put the ball exactly at level with the screen's bottom
             Rectangle newBall = this.BoundingBox;
-            newBall.Location = new Point(this.BoundingBox.X,
-                this.BoundingBox.Y + (this._screen.Bottom - this.BoundingBox.Y));
+            newBall.Location = new Point(this.BoundingBox.X, this._screen.Bottom + this.BoundingBox.Height);
             this.BoundingBox = newBall;
         }
 
