@@ -141,25 +141,59 @@ namespace PongTests
         [TestMethod]
         public void Move_OutsideGoUp()
         {
+            Rectangle boundingBox = GetStdBall();
+            Rectangle screen = GetStdScreen();
+            Paddle paddle = GetStdPaddle();
+            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, new Vector2(0, 1), 6);
+            Point expectedPosition = boundingBox.Location;
 
+            ball.Move();
+
+            Assert.AreEqual(expectedPosition, ball.BoundingBox.Location);
         }
 
         [TestMethod]
         public void Move_OutsideGoRight()
         {
+            Rectangle boundingBox = GetStdBall();
+            Rectangle screen = GetStdScreen();
+            Paddle paddle = GetStdPaddle();
+            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, new Vector2(1, 0), 2);
+            Point expectedPosition = boundingBox.Location;
 
+            ball.Move();
+
+            Assert.AreEqual(expectedPosition, ball.BoundingBox.Location);
         }
 
         [TestMethod]
         public void Move_OutsideGoDown()
         {
+            Rectangle boundingBox = GetStdBall();
+            boundingBox.X++;
+            Rectangle screen = GetStdScreen();
+            Paddle paddle = GetStdPaddle();
+            paddle.MoveLeft();
+            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, new Vector2(0, -1), 6);
+            Point expectedPosition = boundingBox.Location;
 
+            ball.Move();
+
+            Assert.AreEqual(expectedPosition, ball.BoundingBox.Location);
         }
 
         [TestMethod]
         public void Move_OutsideGoLeft()
         {
+            Rectangle boundingBox = GetStdBall();
+            Rectangle screen = GetStdScreen();
+            Paddle paddle = GetStdPaddle();
+            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, new Vector2(-1, 0), 20);
+            Point expectedPosition = boundingBox.Location;
 
+            ball.Move();
+
+            Assert.AreEqual(expectedPosition, ball.BoundingBox.Location);
         }
 
         private Paddle GetStdPaddle()
