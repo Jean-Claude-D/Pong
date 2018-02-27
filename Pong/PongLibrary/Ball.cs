@@ -11,35 +11,24 @@ namespace PongLibrary
     {
         //The number of times the _velocity gets applied
         //to this Ball object everytime it moves
-        private float speed; 
-
         private Vector2 _velocity;
         private Rectangle _screen;
-        private Rectangle _boundingBox;
         public Rectangle BoundingBox
         {
-            get => _boundingBox;
-            private set => _boundingBox = value;
+            get;
+            private set;
         }
         private Paddle _paddle;
 
-        /// <summary>
-        /// Constructs a new fully customizable Ball object,
-        /// to be used only for testing purposes
-        /// </summary>
-        /// <param name="ballDiameter">this Ball object's diameter</param>
-        /// <param name="screen">the surrounding screen</param>
-        /// <param name="paddle">the associated Paddle object</param>
-        /// <param name="velocity">this Ball's vector of movement</param>
-        /// <returns></returns>
-        public static Ball GetBallForTestingPurposes(Rectangle boundingBox, Rectangle screen, Paddle paddle, Vector2 velocity, int speed)
+        public static Ball GetBallForTestingPurposes(Rectangle ball, Rectangle screen, Paddle paddle, bool isUp, bool isRight)
         {
-            Ball testingBall = new Ball(boundingBox.Width, screen.Width, screen.Height, paddle);
-            testingBall._velocity = velocity;
-            testingBall.BoundingBox = boundingBox;
-            testingBall.speed = speed;
+            Ball toReturn = new Ball(ball.Width, screen.Width, screen.Height, paddle)
+            {
+                BoundingBox = ball,
+                _velocity = new Vector2(isRight ? 1 : -1, isUp ? 1 : -1)
+            };
 
-            return testingBall;
+            return toReturn;
         }
 
         /// <summary>
@@ -53,6 +42,9 @@ namespace PongLibrary
         /// <param name="paddle">the associated Paddle object</param>
         public Ball(int ballDiameter, int screenWidth, int screenHeight, Paddle paddle)
         {
+            screenWidth = Math.Abs(screenWidth);
+            screenHeight = Math.Abs(screenHeight);
+
             if(ballDiameter <= 0)
             {
                 throw new ArgumentException
@@ -68,7 +60,7 @@ namespace PongLibrary
             {
                 throw new ArgumentException("paddle cannot be null");
             }
-            else if(paddle.BoundingBox.Height + ballDiameter <= screenHeight)
+            else if(paddle.BoundingBox.Height + ballDiameter >= screenHeight)
             {
                 throw new ArgumentException
                     (string.Format("The sum of ballDiameter and the Height of paddle's BoundingBox " +
@@ -81,32 +73,30 @@ namespace PongLibrary
                     (string.Format("The Width of ", paddle.BoundingBox.Width, screenWidth));
             }
 
-            this._paddle = paddle;
+            _paddle = paddle;
 
             //Setting the surrounding screen
-            this._screen = new Rectangle();
-            this._screen.Location = new Point(0, 0);
-            this._screen.Size = new Point(screenWidth, screenHeight);
+            _screen = new Rectangle
+            {
+                Location = new Point(0, 0),
+                Size = new Point(screenWidth, screenHeight)
+            };
 
             //Setting the Ball's collision Rectangle
-            Rectangle boundingBox = new Rectangle();
-            boundingBox.Location = new Point((screenWidth - ballDiameter) / 2, _screen.Top);
-            boundingBox.Size = new Point(ballDiameter);
-            this.BoundingBox = boundingBox;
+            Rectangle initBox = new Rectangle
+            {
+                Location = new Point((screenWidth - ballDiameter) / 2, _screen.Top),
+                Size = new Point(ballDiameter)
+            };
+            BoundingBox = initBox;
 
-            this._velocity = getRandomVector();
-            this.speed = 3;
+            _velocity = getRandomVector();
         }
 
         //Returns a Vector2 that respects the speed const
         private Vector2 getRandomVector()
         {
-            Random rand = new Random();
-            float x = (float) rand.NextDouble();
-            //pythagorean theorem to get second component
-            float y = (float) Math.Sqrt(1 - Math.Pow(x, 2));
-
-            return new Vector2(negativeOrNot(x), negativeOrNot(y));
+            return new Vector2(negativeOrNot(1), negativeOrNot(1));
         }
 
         //Returns the given float as its negative or positive, randomly
@@ -132,124 +122,108 @@ namespace PongLibrary
         public void Move()
         {
             //this Ball's boundaries to be mutated
-            Rectangle newBall = this.BoundingBox;
-            for (int i = 0; i < speed; i++)
+
+            Rectangle newBall = BoundingBox;
+
+            newBall.Location = new Point((int)(BoundingBox.X + _velocity.X),
+                (int)(BoundingBox.Y + _velocity.Y));
+
+            if (checkCollidePaddle())
             {
-                Console.WriteLine("Ball is at ({0}, {1})", this.BoundingBox.X, this.BoundingBox.Y);
-                Direction direction = checkOffScreen();
-
-                if (checkCollidePaddle())
-                {
-                    Console.WriteLine("Bouoncing on paddle " + this._paddle.BoundingBox.ToString());
-                    BounceOffPaddle();
-                }
-                else if (direction != Direction.NONE)
-                {
-                    bounceOffScreen(direction);
-                }
-
-                //at this point, this Ball object is surely heading in bound
-                newBall.Location = new Point((int)(this.BoundingBox.X + this._velocity.X),
-                    (int)(this.BoundingBox.Y + this._velocity.Y));
-                this.BoundingBox = newBall;
+                bounceOffPaddle();
             }
+            bounceOffScreen();
+            //at this point, this Ball object is surely heading in bound
 
+            this.BoundingBox = newBall;
         }
 
         //Checks if this Ball object is in contact
         //with its associated Paddle object
         private Boolean checkCollidePaddle()
         {
-            return this.BoundingBox.Intersects(this._paddle.BoundingBox) ||
-                (this.BoundingBox.Bottom == this._paddle.BoundingBox.Top &&
-                this.BoundingBox.Left <= this._paddle.BoundingBox.Right &&
-                this.BoundingBox.Right >= this._paddle.BoundingBox.Left);
+            return BoundingBox.Bottom < _paddle.BoundingBox.Top
+                && (BoundingBox.Right > _paddle.BoundingBox.Left
+                && BoundingBox.Left < _paddle.BoundingBox.Right);
         }
 
-        /// <summary>
-        /// Bounces this Ball object on the top of its associated
-        /// Paddle object
-        /// </summary>
-        public void BounceOffPaddle()
+        //Bounces this Ball object on the top of its associated Paddle object
+        private void bounceOffPaddle()
         {
             Rectangle newBall = this.BoundingBox;
-            newBall.Location = new Point(this.BoundingBox.X,
-                this._paddle.BoundingBox.Top + this.BoundingBox.Height * 2);
+            newBall.Y = _paddle.BoundingBox.Top + BoundingBox.Height;
             this.BoundingBox = newBall;
 
-            bounce(Direction.DOWN);
+            bounceOffDirection(Direction.DOWN);
         }
 
         //Checks in which direction, if any, this Ball object
         //is heading off screen
-        private Direction checkOffScreen()
+        private void bounceOffScreen()
         {
-            if(this.BoundingBox.Top + this._velocity.Y > this._screen.Top)
+            if(this.BoundingBox.Top > this._screen.Top)
             {
-                Console.WriteLine("Up");
-                return Direction.UP;
+                bounceOffDirection(Direction.UP);
             }
-            else if(this.BoundingBox.Right + this._velocity.X > this._screen.Right)
+            else if(this.BoundingBox.Right > this._screen.Right)
             {
-                Console.WriteLine("Right");
-                return Direction.RIGHT;
+                bounceOffDirection(Direction.RIGHT);
             }
-            else if(this.BoundingBox.Left + this._velocity.X < this._screen.Left)
+            else if(this.BoundingBox.Left < this._screen.Left)
             {
-                Console.WriteLine("Left");
-                return Direction.LEFT;
+                bounceOffDirection(Direction.LEFT);
             }
-            else if(this.BoundingBox.Bottom + this._velocity.Y < this._screen.Bottom)
-            {
-                Console.WriteLine("Down");
-                return Direction.DOWN;
-            }
-            else
-            {
-                Console.WriteLine("No");
-                return Direction.NONE;
-            }
-        }
-
-        //Bounces this Ball object off the specified screen side
-        private void bounceOffScreen(Direction side)
-        {
-            if(side == Direction.DOWN)
+            else if(this.BoundingBox.Bottom < this._screen.Bottom)
             {
                 hitBottom();
             }
-            else
+
+        }
+
+        //Bounces this Ball object off the specified screen side
+        private void bounceOffDirection(Direction side)
+        {
+            if (side == Direction.UP ||
+                side == Direction.DOWN)
             {
-                //A Direction.NONE would be ignored
-                bounce(side);
+                this._velocity.Y *= -1;
             }
+            else if (side == Direction.LEFT ||
+                side == Direction.RIGHT)
+            {
+                this._velocity.X *= -1;
+            }
+
+            clampBallInScreen();
+        }
+
+        private void clampBallInScreen()
+        {
+            Rectangle newBall = BoundingBox;
+
+            newBall.X = MathHelper.Clamp
+                    (newBall.X,
+                    _screen.Left,
+                    _screen.Right - newBall.Width);
+            newBall.Y = MathHelper.Clamp
+                    (newBall.Y,
+                    _screen.Bottom + newBall.Height,
+                    _screen.Top);
+
+            BoundingBox = newBall;
         }
 
         //Puts this Ball object exactly on the bottom of the screen
         //with a zero Vector2
         private void hitBottom()
         {
-            this._velocity = Vector2.Zero;
-            //Put the ball exactly at level with the screen's bottom
-            Rectangle newBall = this.BoundingBox;
-            newBall.Location = new Point(this.BoundingBox.X, this._screen.Bottom + this.BoundingBox.Height);
-            this.BoundingBox = newBall;
-        }
+            Rectangle newBall = BoundingBox;
 
-        //Inverses the _velocity vector to mimic a bounce
-        //on the side specified by a Direction
-        private void bounce(Direction side)
-        {
-            if(side == Direction.UP ||
-                side == Direction.DOWN)
-            {
-                this._velocity.Y *= -1;
-            }
-            else if(side == Direction.LEFT ||
-                side == Direction.RIGHT)
-            {
-                this._velocity.X *= -1;
-            }
+            //Put the ball exactly at level with the screen's bottom
+            newBall.Y = _screen.Bottom + BoundingBox.Height;
+
+            BoundingBox = newBall;
+            _velocity = Vector2.Zero;
         }
     }
 }

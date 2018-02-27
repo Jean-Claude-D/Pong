@@ -9,204 +9,394 @@ namespace PongTests
     public class BallTest
     {
         [TestMethod]
-        public void Ball_BallDiameterEquals0()
+        public void Ball_DiameterGreaterThanScreenWidth()
         {
-            int screenWidth = 50;
-            int screenHeight = 25;
-            Paddle paddle = GetPaddleWithScreenWidthAndHeight(screenWidth, screenHeight, 5);
-            Action createBallwith0Diameter = delegate { new Ball(0, screenWidth, screenHeight, paddle); };
+            Action init = delegate
+            {
+                new Ball(ballDiameter: 11,
+                    screenWidth: 10,
+                    screenHeight: 100,
 
-            Assert.ThrowsException<ArgumentException>(createBallwith0Diameter);
+                    paddle: new Paddle(paddleWidth: 5,
+                    paddleHeight: 1,
+                    screenWidth: 10,
+                    screenHeight: 100,
+                    speed: 1));
+            };
+
+            Assert.ThrowsException<ArgumentException>(init);
         }
 
         [TestMethod]
-        public void Ball_BallDiameterAndPaddleEqualsScreenHeight()
+        public void Ball_DiameterEqualToScreenWidth()
         {
-            int screenWidth = 50;
-            int screenHeight = 25;
-            int ratio = 5;
-            Paddle paddle = GetPaddleWithScreenWidthAndHeight(screenWidth, screenHeight, ratio);
-            Action createLargeBallInSmallScreen = delegate { new Ball(screenHeight - ratio, screenWidth, screenHeight, paddle); };
+            Action init = delegate
+            {
+                new Ball(ballDiameter:10,
+                    screenWidth:10,
+                    screenHeight:100,
 
-            Assert.ThrowsException<ArgumentException>(createLargeBallInSmallScreen);
+                    paddle:new Paddle(paddleWidth:5,
+                    paddleHeight:1,
+                    screenWidth:10,
+                    screenHeight:100,
+                    speed:1));
+            };
+
+            Assert.ThrowsException<ArgumentException>(init);
         }
 
         [TestMethod]
-        public void Ball_BallDiameterEqualsScreenWidth()
+        public void Ball_DiameterSmallerThanScreenWidth()
         {
-            int screenWidth = 5;
-            int screenHeight = 25;
-            int ratio = 5;
-            Paddle paddle = GetPaddleWithScreenWidthAndHeight(screenWidth, screenHeight, ratio);
-            Action createLargeBallInSmallScreen = delegate { new Ball(screenWidth, screenWidth, screenHeight, paddle); };
+            Ball ball = new Ball(ballDiameter: 9,
+                    screenWidth: 10,
+                    screenHeight: 100,
 
-            Assert.ThrowsException<ArgumentException>(createLargeBallInSmallScreen);
+                    paddle: new Paddle(paddleWidth: 5,
+                    paddleHeight: 1,
+                    screenWidth: 10,
+                    screenHeight: 100,
+                    speed: 1));
+
+            Assert.IsNotNull(ball);
         }
 
         [TestMethod]
-        public void Ball_PaddleIsNull()
+        public void Ball_DiameterGreaterThanScreenHeightAndPaddleHeight()
         {
-            Action createBallWithNullPaddle = delegate { new Ball(2, 50, 25, null); };
+            Action init = delegate
+            {
+                new Ball(ballDiameter: 10,
+                    screenWidth: 100,
+                    screenHeight: 10,
 
-            Assert.ThrowsException<ArgumentException>(createBallWithNullPaddle);
+                    paddle: new Paddle(paddleWidth: 5,
+                    paddleHeight: 1,
+                    screenWidth: 100,
+                    screenHeight: 10,
+                    speed: 1));
+            };
+
+            Assert.ThrowsException<ArgumentException>(init);
         }
 
         [TestMethod]
-        public void Ball_PaddleEqualsScreenWidth()
+        public void Ball_DiameterEqualToScreenHeightAndPaddleHeight()
         {
-            int screenWidth = 50;
-            int screenHeight = 25;
-            int ratio = 5;
-            Paddle paddle = GetPaddleWithScreenWidthAndHeight(screenWidth, screenHeight, ratio);
-            Action createBallWithSmallScreen = delegate { new Ball(1, 50 / ratio, 25, paddle); };
+            Action init = delegate
+            {
+                new Ball(ballDiameter: 9,
+                    screenWidth: 100,
+                    screenHeight: 10,
 
-            Assert.ThrowsException<ArgumentException>(createBallWithSmallScreen);
+                    paddle: new Paddle(paddleWidth: 5,
+                    paddleHeight: 1,
+                    screenWidth: 100,
+                    screenHeight: 10,
+                    speed: 1));
+            };
+
+            Assert.ThrowsException<ArgumentException>(init);
         }
 
-        private Paddle GetPaddleWithScreenWidthAndHeight(int screenWidth, int screenHeight, int ratio)
+        [TestMethod]
+        public void Ball_DiameterSmallerThanScreenHeightAndPaddleHeight()
         {
-            return new Paddle(screenWidth / ratio, screenHeight / ratio, screenWidth, screenHeight, ratio);
+            Ball ball = new Ball(ballDiameter: 8,
+                    screenWidth: 100,
+                    screenHeight: 10,
+
+                    paddle: new Paddle(paddleWidth: 5,
+                    paddleHeight: 1,
+                    screenWidth: 100,
+                    screenHeight: 10,
+                    speed: 1));
+
+            Assert.IsNotNull(ball);
+        }
+
+        [TestMethod]
+        public void Ball_PaddleNull()
+        {
+            Action init = delegate
+            {
+                new Ball(ballDiameter: 8,
+                    screenWidth: 100,
+                    screenHeight: 10,
+                    paddle: null);
+            };
+
+            Assert.ThrowsException<ArgumentException>(init);
+        }
+
+        [TestMethod]
+        public void Ball_ScreenSizeNotMatchPaddleScreenSize()
+        {
+            Action init = delegate
+            {
+                new Ball(ballDiameter: 9,
+                    screenWidth: 100,
+                    screenHeight: 10,
+
+                    paddle: new Paddle(paddleWidth: 5,
+                    paddleHeight: 1,
+                    screenWidth: 10,
+                    screenHeight: 100,
+                    speed: 1));
+            };
+
+            Assert.ThrowsException<ArgumentException>(init);
         }
 
         [TestMethod]
         public void Move_HitsPaddle()
         {
-            Rectangle boundingBox = GetStdBall();
-            Rectangle screen = GetStdScreen();
-            Paddle paddle = GetStdPaddle();
-            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, new Vector2(-1), 3);
-            Point expectedPosition = new Point(7, -2);
+            Rectangle boundingBox = getStdBall();
+            Rectangle screen = getStdScreen();
+            Paddle paddle = getStdPaddle();
+            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, true, false);
+
+            Console.WriteLine(screen.Contains(ball.BoundingBox));
 
             ball.Move();
 
-            Assert.AreEqual(expectedPosition, ball.BoundingBox.Location);
+            Console.WriteLine(screen);
+            Console.WriteLine(ball.BoundingBox);
+
+            Console.WriteLine(screen.Top + " >= " + ball.BoundingBox.Top);
+            Assert.IsTrue(screen.Top >= ball.BoundingBox.Top);
+            Console.WriteLine(screen.Right + " >= " + ball.BoundingBox.Right);
+            Assert.IsTrue(screen.Right >= ball.BoundingBox.Right);
+            Console.WriteLine(screen.Bottom + " <= " + ball.BoundingBox.Bottom);
+            Assert.IsTrue(screen.Bottom <= ball.BoundingBox.Bottom);
+            Console.WriteLine(screen.Left + " <= " + ball.BoundingBox.Left);
+            Assert.IsTrue(screen.Left <= ball.BoundingBox.Left);
         }
 
         [TestMethod]
         public void Move_InsideGoUp()
         {
-            Rectangle boundingBox = GetStdBall();
-            Rectangle screen = GetStdScreen();
-            Paddle paddle = GetStdPaddle();
-            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, new Vector2(0, 1), 1);
-            Point expectedPosition = new Point(10, -2);
+            Rectangle boundingBox = getStdBall();
+            Rectangle screen = getStdScreen();
+            Paddle paddle = getStdPaddle();
+            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, true, true);
+
+            Console.WriteLine(screen.Contains(ball.BoundingBox));
 
             ball.Move();
 
-            Assert.AreEqual(expectedPosition, ball.BoundingBox.Location);
+            Console.WriteLine(screen);
+            Console.WriteLine(ball.BoundingBox);
+
+            Console.WriteLine(screen.Top + " >= " + ball.BoundingBox.Top);
+            Assert.IsTrue(screen.Top >= ball.BoundingBox.Top);
+            Console.WriteLine(screen.Right + " >= " + ball.BoundingBox.Right);
+            Assert.IsTrue(screen.Right >= ball.BoundingBox.Right);
+            Console.WriteLine(screen.Bottom + " <= " + ball.BoundingBox.Bottom);
+            Assert.IsTrue(screen.Bottom <= ball.BoundingBox.Bottom);
+            Console.WriteLine(screen.Left + " <= " + ball.BoundingBox.Left);
+            Assert.IsTrue(screen.Left <= ball.BoundingBox.Left);
         }
 
         [TestMethod]
         public void Move_InsideGoRight()
         {
-            Rectangle boundingBox = GetStdBall();
-            Rectangle screen = GetStdScreen();
-            Paddle paddle = GetStdPaddle();
-            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, new Vector2(1, 0), 1);
-            Point expectedPosition = new Point(11, -3);
+            Rectangle boundingBox = getStdBall();
+            Rectangle screen = getStdScreen();
+            Paddle paddle = getStdPaddle();
+            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, false, true);
+
+            Console.WriteLine(screen.Contains(ball.BoundingBox));
 
             ball.Move();
 
-            Assert.AreEqual(expectedPosition, ball.BoundingBox.Location);
+            Console.WriteLine(screen);
+            Console.WriteLine(ball.BoundingBox);
+
+            Console.WriteLine(screen.Top + " >= " + ball.BoundingBox.Top);
+            Assert.IsTrue(screen.Top >= ball.BoundingBox.Top);
+            Console.WriteLine(screen.Right + " >= " + ball.BoundingBox.Right);
+            Assert.IsTrue(screen.Right >= ball.BoundingBox.Right);
+            Console.WriteLine(screen.Bottom + " <= " + ball.BoundingBox.Bottom);
+            Assert.IsTrue(screen.Bottom <= ball.BoundingBox.Bottom);
+            Console.WriteLine(screen.Left + " <= " + ball.BoundingBox.Left);
+            Assert.IsTrue(screen.Left <= ball.BoundingBox.Left);
         }
 
         [TestMethod]
         public void Move_InsideGoDown()
         {
-            Rectangle boundingBox = GetStdBall();
-            Rectangle screen = GetStdScreen();
-            Paddle paddle = GetStdPaddle();
-            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, new Vector2(0, -1), 1);
-            Point expectedPosition = new Point(10, -4);
+            Rectangle boundingBox = getStdBall();
+            Rectangle screen = getStdScreen();
+            Paddle paddle = getStdPaddle();
+            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, false, true);
+
+            Console.WriteLine(screen.Contains(ball.BoundingBox));
 
             ball.Move();
 
-            Assert.AreEqual(expectedPosition, ball.BoundingBox.Location);
+            Console.WriteLine(screen);
+            Console.WriteLine(ball.BoundingBox);
+
+            Console.WriteLine(screen.Top + " >= " + ball.BoundingBox.Top);
+            Assert.IsTrue(screen.Top >= ball.BoundingBox.Top);
+            Console.WriteLine(screen.Right + " >= " + ball.BoundingBox.Right);
+            Assert.IsTrue(screen.Right >= ball.BoundingBox.Right);
+            Console.WriteLine(screen.Bottom + " <= " + ball.BoundingBox.Bottom);
+            Assert.IsTrue(screen.Bottom <= ball.BoundingBox.Bottom);
+            Console.WriteLine(screen.Left + " <= " + ball.BoundingBox.Left);
+            Assert.IsTrue(screen.Left <= ball.BoundingBox.Left);
         }
 
         [TestMethod]
         public void Move_InsideGoLeft()
         {
-            Rectangle boundingBox = GetStdBall();
-            Rectangle screen = GetStdScreen();
-            Paddle paddle = GetStdPaddle();
-            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, new Vector2(-1, 0), 1);
-            Point expectedPosition = new Point(9, -3);
+            Rectangle boundingBox = getStdBall();
+            Rectangle screen = getStdScreen();
+            Paddle paddle = getStdPaddle();
+            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, true, false);
+
+            Console.WriteLine(screen.Contains(ball.BoundingBox));
 
             ball.Move();
 
-            Assert.AreEqual(expectedPosition, ball.BoundingBox.Location);
+            Console.WriteLine(screen);
+            Console.WriteLine(ball.BoundingBox);
+
+            Console.WriteLine(screen.Top + " >= " + ball.BoundingBox.Top);
+            Assert.IsTrue(screen.Top >= ball.BoundingBox.Top);
+            Console.WriteLine(screen.Right + " >= " + ball.BoundingBox.Right);
+            Assert.IsTrue(screen.Right >= ball.BoundingBox.Right);
+            Console.WriteLine(screen.Bottom + " <= " + ball.BoundingBox.Bottom);
+            Assert.IsTrue(screen.Bottom <= ball.BoundingBox.Bottom);
+            Console.WriteLine(screen.Left + " <= " + ball.BoundingBox.Left);
+            Assert.IsTrue(screen.Left <= ball.BoundingBox.Left);
         }
 
         [TestMethod]
         public void Move_OutsideGoUp()
         {
-            Rectangle boundingBox = GetStdBall();
-            Rectangle screen = GetStdScreen();
-            Paddle paddle = GetStdPaddle();
-            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, new Vector2(0, 1), 6);
-            Point expectedPosition = boundingBox.Location;
+            Rectangle boundingBox = getStdBall();
+            Rectangle screen = getStdScreen();
+            Paddle paddle = getStdPaddle();
+            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, true, true);
+
+            Console.WriteLine(screen.Contains(ball.BoundingBox));
 
             ball.Move();
+            ball.Move();
+            ball.Move();
+            ball.Move();
 
-            Assert.AreEqual(expectedPosition, ball.BoundingBox.Location);
+            Console.WriteLine(screen);
+            Console.WriteLine(ball.BoundingBox);
+
+            Console.WriteLine(screen.Top + " >= " + ball.BoundingBox.Top);
+            Assert.IsTrue(screen.Top >= ball.BoundingBox.Top);
+            Console.WriteLine(screen.Right + " >= " + ball.BoundingBox.Right);
+            Assert.IsTrue(screen.Right >= ball.BoundingBox.Right);
+            Console.WriteLine(screen.Bottom + " <= " + ball.BoundingBox.Bottom);
+            Assert.IsTrue(screen.Bottom <= ball.BoundingBox.Bottom);
+            Console.WriteLine(screen.Left + " <= " + ball.BoundingBox.Left);
+            Assert.IsTrue(screen.Left <= ball.BoundingBox.Left);
         }
 
         [TestMethod]
         public void Move_OutsideGoRight()
         {
-            Rectangle boundingBox = GetStdBall();
-            Rectangle screen = GetStdScreen();
-            Paddle paddle = GetStdPaddle();
-            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, new Vector2(1, 0), 2);
-            Point expectedPosition = boundingBox.Location;
+            Rectangle boundingBox = getStdBall();
+            Rectangle screen = getStdScreen();
+            Paddle paddle = getStdPaddle();
+            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, false, true);
+
+            Console.WriteLine(screen.Contains(ball.BoundingBox));
 
             ball.Move();
+            ball.Move();
+            ball.Move();
+            ball.Move();
 
-            Assert.AreEqual(expectedPosition, ball.BoundingBox.Location);
+            Console.WriteLine(screen);
+            Console.WriteLine(ball.BoundingBox);
+
+            Console.WriteLine(screen.Top + " >= " + ball.BoundingBox.Top);
+            Assert.IsTrue(screen.Top >= ball.BoundingBox.Top);
+            Console.WriteLine(screen.Right + " >= " + ball.BoundingBox.Right);
+            Assert.IsTrue(screen.Right >= ball.BoundingBox.Right);
+            Console.WriteLine(screen.Bottom + " <= " + ball.BoundingBox.Bottom);
+            Assert.IsTrue(screen.Bottom <= ball.BoundingBox.Bottom);
+            Console.WriteLine(screen.Left + " <= " + ball.BoundingBox.Left);
+            Assert.IsTrue(screen.Left <= ball.BoundingBox.Left);
         }
 
         [TestMethod]
         public void Move_OutsideGoDown()
         {
-            Rectangle boundingBox = GetStdBall();
-            boundingBox.X++;
-            Rectangle screen = GetStdScreen();
-            Paddle paddle = GetStdPaddle();
-            paddle.MoveLeft();
-            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, new Vector2(0, -1), 6);
-            Point expectedPosition = new Point(11, -5);
+            Rectangle boundingBox = getStdBall();
+            Rectangle screen = getStdScreen();
+            Paddle paddle = getStdPaddle();
+            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, false, true);
+
+            Console.WriteLine(screen.Contains(ball.BoundingBox));
 
             ball.Move();
+            ball.Move();
+            ball.Move();
+            ball.Move();
 
-            Assert.AreEqual(expectedPosition, ball.BoundingBox.Location);
+            Console.WriteLine(screen);
+            Console.WriteLine(ball.BoundingBox);
+
+            Console.WriteLine(screen.Top + " >= " + ball.BoundingBox.Top);
+            Assert.IsTrue(screen.Top >= ball.BoundingBox.Top);
+            Console.WriteLine(screen.Right + " >= " + ball.BoundingBox.Right);
+            Assert.IsTrue(screen.Right >= ball.BoundingBox.Right);
+            Console.WriteLine(screen.Bottom + " <= " + ball.BoundingBox.Bottom);
+            Assert.IsTrue(screen.Bottom <= ball.BoundingBox.Bottom);
+            Console.WriteLine(screen.Left + " <= " + ball.BoundingBox.Left);
+            Assert.IsTrue(screen.Left <= ball.BoundingBox.Left);
         }
 
         [TestMethod]
         public void Move_OutsideGoLeft()
         {
-            Rectangle boundingBox = GetStdBall();
-            Rectangle screen = GetStdScreen();
-            Paddle paddle = GetStdPaddle();
-            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, new Vector2(-1, 0), 20);
-            Point expectedPosition = boundingBox.Location;
+            Rectangle boundingBox = getStdBall();
+            Rectangle screen = getStdScreen();
+            Paddle paddle = getStdPaddle();
+            Ball ball = Ball.GetBallForTestingPurposes(boundingBox, screen, paddle, true, false);
+
+            Console.WriteLine(screen.Contains(ball.BoundingBox));
 
             ball.Move();
+            ball.Move();
+            ball.Move();
+            ball.Move();
 
-            Assert.AreEqual(expectedPosition, ball.BoundingBox.Location);
+            Console.WriteLine(screen);
+            Console.WriteLine(ball.BoundingBox);
+
+            Console.WriteLine(screen.Top + " >= " + ball.BoundingBox.Top);
+            Assert.IsTrue(screen.Top >= ball.BoundingBox.Top);
+            Console.WriteLine(screen.Right + " >= " + ball.BoundingBox.Right);
+            Assert.IsTrue(screen.Right >= ball.BoundingBox.Right);
+            Console.WriteLine(screen.Bottom + " <= " + ball.BoundingBox.Bottom);
+            Assert.IsTrue(screen.Bottom <= ball.BoundingBox.Bottom);
+            Console.WriteLine(screen.Left + " <= " + ball.BoundingBox.Left);
+            Assert.IsTrue(screen.Left <= ball.BoundingBox.Left);
         }
 
-        private Paddle GetStdPaddle()
+        private Paddle getStdPaddle()
         {
             return new Paddle(10, 1, 12, 6, 1);
         }
 
-        private Rectangle GetStdScreen()
+        private Rectangle getStdScreen()
         {
             return new Rectangle(location: Point.Zero, size: new Point(12, -6));
         }
 
-        private Rectangle GetStdBall()
+        private Rectangle getStdBall()
         {
             return new Rectangle(x: 10, y: -3, width: 1, height: 1);
         }
