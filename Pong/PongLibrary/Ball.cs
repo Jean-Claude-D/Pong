@@ -42,9 +42,6 @@ namespace PongLibrary
         /// <param name="paddle">the associated Paddle object</param>
         public Ball(int ballDiameter, int screenWidth, int screenHeight, Paddle paddle)
         {
-            screenWidth = Math.Abs(screenWidth);
-            screenHeight = Math.Abs(screenHeight);
-
             if(ballDiameter <= 0)
             {
                 throw new ArgumentException
@@ -90,7 +87,8 @@ namespace PongLibrary
             };
             BoundingBox = initBox;
 
-            _velocity = getRandomVector();
+            _velocity = new Vector2(1, 1);
+           /* _velocity = getRandomVector();*/
         }
 
         //Returns a Vector2 that respects the speed const
@@ -128,21 +126,22 @@ namespace PongLibrary
             newBall.Location = new Point((int)(BoundingBox.X + _velocity.X),
                 (int)(BoundingBox.Y + _velocity.Y));
 
+            this.BoundingBox = newBall;
+
             if (checkCollidePaddle())
             {
                 bounceOffPaddle();
             }
             bounceOffScreen();
-            //at this point, this Ball object is surely heading in bound
 
-            this.BoundingBox = newBall;
+            //at this point, this Ball object is surely heading in bound
         }
 
         //Checks if this Ball object is in contact
         //with its associated Paddle object
         private Boolean checkCollidePaddle()
         {
-            return BoundingBox.Bottom < _paddle.BoundingBox.Top
+            return BoundingBox.Bottom >= _paddle.BoundingBox.Top
                 && (BoundingBox.Right > _paddle.BoundingBox.Left
                 && BoundingBox.Left < _paddle.BoundingBox.Right);
         }
@@ -151,7 +150,7 @@ namespace PongLibrary
         private void bounceOffPaddle()
         {
             Rectangle newBall = this.BoundingBox;
-            newBall.Y = _paddle.BoundingBox.Top + BoundingBox.Height;
+            newBall.Y = _paddle.BoundingBox.Top - BoundingBox.Height;
             this.BoundingBox = newBall;
 
             bounceOffDirection(Direction.DOWN);
@@ -161,7 +160,7 @@ namespace PongLibrary
         //is heading off screen
         private void bounceOffScreen()
         {
-            if(this.BoundingBox.Top > this._screen.Top)
+            if(this.BoundingBox.Top < this._screen.Top)
             {
                 bounceOffDirection(Direction.UP);
             }
@@ -173,7 +172,7 @@ namespace PongLibrary
             {
                 bounceOffDirection(Direction.LEFT);
             }
-            else if(this.BoundingBox.Bottom < this._screen.Bottom)
+            else if(this.BoundingBox.Bottom > this._screen.Bottom)
             {
                 hitBottom();
             }
@@ -207,8 +206,8 @@ namespace PongLibrary
                     _screen.Right - newBall.Width);
             newBall.Y = MathHelper.Clamp
                     (newBall.Y,
-                    _screen.Bottom + newBall.Height,
-                    _screen.Top);
+                    _screen.Top,
+                    _screen.Bottom - newBall.Height);
 
             BoundingBox = newBall;
         }
@@ -220,7 +219,7 @@ namespace PongLibrary
             Rectangle newBall = BoundingBox;
 
             //Put the ball exactly at level with the screen's bottom
-            newBall.Y = _screen.Bottom + BoundingBox.Height;
+            newBall.Y = _screen.Bottom - BoundingBox.Height;
 
             BoundingBox = newBall;
             _velocity = Vector2.Zero;

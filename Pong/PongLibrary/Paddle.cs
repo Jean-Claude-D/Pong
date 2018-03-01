@@ -50,11 +50,11 @@ namespace PongLibrary
                     (string.Format("screenWidth ({0}) must be greater than paddleWidth ({1})",
                     screenWidth, paddleWidth));
             }
-            else if(screenHeight <= paddleHeight)
+            else if(Math.Abs(screenHeight) <= paddleHeight)
             {
                 throw new ArgumentException
                     (string.Format("screenHeight ({0}) must be greater than paddleHeight ({1})",
-                    screenHeight, paddleHeight));
+                    Math.Abs(screenHeight), paddleHeight));
             }
             else if(speed == 0)
             {
@@ -62,11 +62,13 @@ namespace PongLibrary
             }
 
             //placing the boundingBox at the center of the screen
-            Rectangle boundingBox = new Rectangle();
-            boundingBox.X = (screenWidth - paddleWidth) / 2;
-            boundingBox.Y = -(screenHeight - paddleHeight);
-            boundingBox.Width = paddleWidth;
-            boundingBox.Height = paddleHeight;
+            Rectangle boundingBox = new Rectangle
+            {
+                X = (screenWidth - paddleWidth) / 2,
+                Y = screenHeight - paddleHeight,
+                Width = paddleWidth,
+                Height = paddleHeight
+            };
 
             this.BoundingBox = boundingBox;
             this.screenWidth = screenWidth;
